@@ -5,6 +5,7 @@ public class TerrainControl : MonoBehaviour
 {
     public TerrainData terrain;
 
+    //简单的地面过度
     private void drawTerrainTexture()
     {
         int height = terrain.alphamapHeight;
