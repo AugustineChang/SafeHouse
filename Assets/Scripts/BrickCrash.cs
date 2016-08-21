@@ -4,6 +4,7 @@ using UnityEngine;
 public class BrickCrash : MonoBehaviour
 {
     public GameObject BrokenBrick;
+    public BrickPiece BrickPiece;
     [HideInInspector]
     public int BrickIndex;
 
@@ -72,12 +73,8 @@ public class BrickCrash : MonoBehaviour
             audioSource.Play();
             isCrash = true;
 
-            GameObject crash = GameObject.Instantiate<GameObject>( BrokenBrick );
-            crash.transform.SetParent( transform.parent );
-            crash.transform.localPosition = transform.localPosition;
-            crash.transform.localRotation = Quaternion.identity;
-
-
+            crashAnime();
+            GetComponent<BoxCollider>().enabled = false;
             meshRender.enabled = false;
             Destroy( gameObject , 1.0f );
 
@@ -86,4 +83,22 @@ public class BrickCrash : MonoBehaviour
     }
 
     public bool isHit() { return hitTimes > 0; }
+
+    private void crashAnime()
+    {
+        int num = 16;
+        float size = 1.0f / 4;
+        for ( int i = 0 ; i < num ; i++ )
+        {
+            BrickPiece piece = GameObject.Instantiate<BrickPiece>( BrickPiece );
+            piece.Init();
+            piece.transform.SetParent( transform.parent );
+
+            Vector3 position = transform.localPosition;
+            position.x += ( i % 4 ) * size - 0.375f;
+            position.y += ( i / 4 ) * size - 0.375f;
+            piece.transform.localPosition = position;
+            piece.transform.localRotation = Quaternion.identity;
+        }
+    }
 }

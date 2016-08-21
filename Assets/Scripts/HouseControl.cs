@@ -28,9 +28,9 @@ public class HouseControl : MonoBehaviour
         createPillar( new Vector3( 5 , 0 , -5 ) );
         createPillar( new Vector3( 5 , 0 , 5 ) );
 
-        GameObject roof = GameObject.Instantiate<GameObject>( Roof );
-        roof.transform.SetParent( transform );
-        roof.transform.localPosition = Vector3.up * 3.15f;
+        //GameObject roof = GameObject.Instantiate<GameObject>( Roof );
+        //roof.transform.SetParent( transform );
+        //roof.transform.localPosition = Vector3.up * 3.15f;
 
         GameObject floor = GameObject.Instantiate<GameObject>( Floor );
         floor.transform.SetParent( transform );
