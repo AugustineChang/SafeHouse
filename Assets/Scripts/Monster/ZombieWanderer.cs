@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ZombieWanderer : MonoBehaviour 
+public class ZombieWanderer : Zombie
 {
     public Vector3 StartPoint;
     public Vector3 EndPoint;

@@ -13,6 +13,7 @@ public class HouseControl : MonoBehaviour
     private List<BrickCrash> brickList;
     private float timer;
     private int zombieNum;
+    private int zombieMaxNum = 20;
 
     void Start()
     {
@@ -39,6 +40,8 @@ public class HouseControl : MonoBehaviour
 
     void Update()
     {
+        if ( zombieNum >= zombieMaxNum ) return;
+
         timer += Time.deltaTime;
         float targetTime = ( zombieNum ) * 5.0f + 5.0f;
         if ( timer > targetTime )
@@ -84,6 +87,36 @@ public class HouseControl : MonoBehaviour
     {
         brickList[index].RemoveListener( OnBrickDestroy );
         brickList[index] = null;
+        
+        checkWallBreak( index / 30 );
+    }
+
+    private void OnZombieDie()
+    {
+        zombieNum--;
+    }
+
+    private void checkWallBreak( int index )
+    {
+        int breakNum = 0;
+        int start = index * 30;
+        int end = index * 30 + 30;
+        for ( int i = start ; i < end ; i++ )
+        {
+            if ( brickList[i] == null ) breakNum++;
+        }
+
+        if ( breakNum < 7 ) return;
+
+        for ( int i = start ; i < end ; i++ )
+        {
+            if ( brickList[i] != null )
+            {
+                brickList[i].RemoveListener( OnBrickDestroy );
+                brickList[i].PlayCrashAnime();
+                brickList[i] = null;
+            }
+        }
     }
 
     private void randBrickCrash()
@@ -108,11 +141,13 @@ public class HouseControl : MonoBehaviour
         {
             ZombieCreeper newZ = GameObject.Instantiate<ZombieCreeper>( Zombie2 );
             newZ.Init( brick );
+            newZ.WhenDie = OnZombieDie;
         }
         else if ( row == 1 )
         {
             ZombieAttacker newZ = GameObject.Instantiate<ZombieAttacker>( Zombie );
-            newZ.Init( brick );
+            newZ.Init( brick , brickList[wall * 30 + cell - 10] );
+            newZ.WhenDie = OnZombieDie;
         }
     }
 }

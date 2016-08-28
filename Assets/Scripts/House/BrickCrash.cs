@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class BrickCrash : MonoBehaviour
 {
-    public GameObject BrokenBrick;
     public BrickPiece BrickPiece;
     [HideInInspector]
     public int BrickIndex;
@@ -71,18 +70,24 @@ public class BrickCrash : MonoBehaviour
         {
             audioSource.clip = crashSound;
             audioSource.Play();
-            isCrash = true;
 
-            crashAnime();
-            GetComponent<BoxCollider>().enabled = false;
-            meshRender.enabled = false;
-            Destroy( gameObject , 1.0f );
-
-            DestroyHandler.Invoke( BrickIndex );
+            PlayCrashAnime();
         }
     }
 
     public bool isHit() { return hitTimes > 0; }
+
+    public void PlayCrashAnime()
+    {
+        isCrash = true;
+        crashAnime();
+        GetComponent<BoxCollider>().enabled = false;
+        meshRender.enabled = false;
+        Destroy( gameObject , 1.0f );
+
+        if ( DestroyHandler != null )
+            DestroyHandler.Invoke( BrickIndex );
+    }
 
     private void crashAnime()
     {

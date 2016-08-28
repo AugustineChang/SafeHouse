@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ZombieCreeper : MonoBehaviour
+public class ZombieCreeper : Zombie
 {
-    private Animator animator;
     private BrickCrash attackBrick;
     private float timer;
 
@@ -15,6 +14,8 @@ public class ZombieCreeper : MonoBehaviour
 
 	public void Init( BrickCrash brick )
     {
+        base.Init();
+
         Vector3 pos = brick.transform.position;
         pos.y = 0;
         Quaternion rot = Quaternion.Euler( 0 , brick.transform.eulerAngles.y , 0 );
@@ -25,7 +26,6 @@ public class ZombieCreeper : MonoBehaviour
         timer = 0.367f;
         attackBrick = brick;
         attackBrick.AddListener( OnBrickDestroy );
-        animator = GetComponent<Animator>();
 
         state = 0;
         speed = 0.6f;
@@ -67,6 +67,12 @@ public class ZombieCreeper : MonoBehaviour
 
     private void creep()
     {
+        if ( stopTime > 0.0f )
+        {
+            stopTime -= Time.deltaTime;
+            return;
+        }
+
         Vector3 targetPos = new Vector3( target.position.x , 0 , target.position.z );
         float distance = Vector3.Distance( transform.position , targetPos );
         if ( distance <= 1.5f )
@@ -74,7 +80,7 @@ public class ZombieCreeper : MonoBehaviour
             if ( !isAttack )
             {
                 isAttack = true;
-                animator.Play( "GroundAttack" );
+                animator.SetInteger( "status" , 0 );
             }
         }
         else
@@ -82,22 +88,22 @@ public class ZombieCreeper : MonoBehaviour
             if ( isAttack )
             {
                 isAttack = false;
-                animator.Play( "GroundWalk" );
+                animator.SetInteger( "status" , 1 );
             }
-            
-            Vector3 lookForward = targetPos - transform.position;
-            transform.rotation = Quaternion.Slerp( transform.rotation , Quaternion.LookRotation( lookForward ) , Time.deltaTime * 3 );
 
             Vector3 forward = transform.TransformDirection( Vector3.forward );
             transform.localPosition += forward * speed * Time.deltaTime;
         }
+
+        Vector3 lookForward = targetPos - transform.position;
+        transform.rotation = Quaternion.Slerp( transform.rotation , Quaternion.LookRotation( lookForward ) , Time.deltaTime * 3 );
     }
 
     private void OnBrickDestroy( int index )
     {
         attackBrick.RemoveListener( OnBrickDestroy );
         attackBrick = null;
-        animator.Play( "GroundWalk" );
+        animator.SetInteger( "status" , 1 );
         timer = 0.0f;
     }
 }
