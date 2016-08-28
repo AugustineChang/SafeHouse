@@ -3,7 +3,7 @@ using System.Collections;
 
 public class ZombieCreeper : Zombie
 {
-    private BrickCrash attackBrick;
+    private Brick attackBrick;
     private float timer;
 
     //creep
@@ -12,7 +12,7 @@ public class ZombieCreeper : Zombie
     private int state;
     private float speed;
 
-	public void Init( BrickCrash brick )
+	public void Init( Brick brick )
     {
         base.Init();
 

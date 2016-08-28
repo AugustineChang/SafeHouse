@@ -3,21 +3,21 @@ using System.Collections.Generic;
 
 public class HouseControl : MonoBehaviour
 {
-    public BrickCrash Brick;
+    public Brick Brick;
     public GameObject Pillar;
     public GameObject Roof;
     public GameObject Floor;
     public ZombieAttacker Zombie;
     public ZombieCreeper Zombie2;
     
-    private List<BrickCrash> brickList;
+    private List<Brick> brickList;
     private float timer;
     private int zombieNum;
     private int zombieMaxNum = 20;
 
     void Start()
     {
-        brickList = new List<BrickCrash>( 120 );
+        brickList = new List<Brick>( 120 );
 
         createWall( "LeftWall" , new Vector3( -4.5f , 0.5f , -5 ) , Quaternion.identity );
         createWall( "RightWall" , new Vector3( 4.5f , 0.5f , 5 ) , Quaternion.Euler( 0 , 180 , 0 ) );
@@ -62,7 +62,7 @@ public class HouseControl : MonoBehaviour
         {
             for ( int i = 0 ; i < 10 ; i++ )
             {
-                BrickCrash newBrick = GameObject.Instantiate<BrickCrash>( Brick );
+                Brick newBrick = GameObject.Instantiate<Brick>( Brick );
                 newBrick.transform.SetParent( wall.transform );
                 newBrick.transform.localPosition = Vector3.right * i + Vector3.up * j;
                 newBrick.AddListener( OnBrickDestroy );
@@ -121,7 +121,7 @@ public class HouseControl : MonoBehaviour
 
     private void randBrickCrash()
     {
-        BrickCrash brick = null;
+        Brick brick = null;
         int rand;
         int wall;
         int cell;

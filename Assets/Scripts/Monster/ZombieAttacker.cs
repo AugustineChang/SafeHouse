@@ -4,14 +4,14 @@ using System.Collections;
 public class ZombieAttacker : Zombie
 {
     private Transform target;
-    private BrickCrash attackBrick;
-    private BrickCrash downBrick;
+    private Brick attackBrick;
+    private Brick downBrick;
 
     private float timer;
     private float walkSpeed;
     private bool isAttack;
 
-    public void Init( BrickCrash brick , BrickCrash brick2 )
+    public void Init( Brick brick , Brick brick2 )
     {
         base.Init();
 

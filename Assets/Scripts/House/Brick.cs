@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class BrickCrash : MonoBehaviour
+public class Brick : MonoBehaviour
 {
     public BrickPiece BrickPiece;
     [HideInInspector]
@@ -77,13 +77,13 @@ public class BrickCrash : MonoBehaviour
 
     public bool isHit() { return hitTimes > 0; }
 
-    public void PlayCrashAnime()
+    public void PlayCrashAnime( bool isDestroy = true )
     {
         isCrash = true;
         crashAnime();
         GetComponent<BoxCollider>().enabled = false;
         meshRender.enabled = false;
-        Destroy( gameObject , 1.0f );
+        if ( isDestroy ) Destroy( gameObject , 1.0f );
 
         if ( DestroyHandler != null )
             DestroyHandler.Invoke( BrickIndex );
