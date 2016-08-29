@@ -6,6 +6,8 @@ public class ZombieAttacker : Zombie
     private Transform target;
     private Brick attackBrick;
     private Brick downBrick;
+    private BrokenHole attackHole;
+    private BrokenHole downHole;
 
     private float timer;
     private float walkSpeed;
@@ -103,20 +105,68 @@ public class ZombieAttacker : Zombie
         transform.rotation = Quaternion.Slerp( transform.rotation , Quaternion.LookRotation( lookForward ) , Time.deltaTime * 3 );
     }
 
-    private void OnBrickDestroy( int index )
+    private void OnBrickDestroy( int index , BrokenHole hole )
     {
+        if (animator == null) return;
+
         attackBrick.RemoveListener( OnBrickDestroy );
         attackBrick = null;
+        
+        if (downBrick == null) animator.SetInteger("status", 2);
+        else
+        {
+            animator.SetInteger("status", 1);
 
-        if ( downBrick == null ) animator.SetInteger( "status" , 2 );
-        else animator.SetInteger( "status" , 1 );
+            attackHole = hole;
+            attackHole.AddListener(OnBrickRepair);
+        }
     }
 
-    private void OnBrickDownDestroy( int index )
+    private void OnBrickRepair(int index, Brick brick)
     {
+        if (animator == null) return;
+
+        //下面砖破了 说明怪已经进屋了 就无需相应事件
+        if (downBrick == null) return;
+        if (health <= 0) return;
+
+        attackHole.RemoveListener(OnBrickRepair);
+        attackHole = null;
+
+        attackBrick = brick;
+        attackBrick.AddListener(OnBrickDestroy);
+
+        //下砖没破 改为继续拍当前砖
+        animator.SetInteger("status", 0);
+        animator.Play("Idle");
+    }
+
+    private void OnBrickDownDestroy( int index, BrokenHole hole )
+    {
+        if (animator == null) return;
+
         downBrick.RemoveListener( OnBrickDestroy );
         downBrick = null;
 
-        if ( attackBrick == null ) animator.SetInteger( "status" , 2 );
+        if (attackBrick == null) animator.SetInteger("status", 2);
+        else//当前砖破了 说明怪已经进屋了 就无需相应事件
+        {
+            downHole = hole;
+            downHole.AddListener(OnBrickDownRepair);
+        }
+    }
+
+    private void OnBrickDownRepair(int index, Brick brick)
+    {
+        if (animator == null) return;
+
+        //当前砖破了 说明怪已经进屋了 就无需相应事件
+        if (attackBrick == null) return;
+
+        downHole.RemoveListener(OnBrickDownRepair);
+        downHole = null;
+
+        downBrick = brick;
+        downBrick.AddListener(OnBrickDownDestroy);
     }
 }

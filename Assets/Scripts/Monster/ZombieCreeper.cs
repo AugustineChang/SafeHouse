@@ -99,10 +99,11 @@ public class ZombieCreeper : Zombie
         transform.rotation = Quaternion.Slerp( transform.rotation , Quaternion.LookRotation( lookForward ) , Time.deltaTime * 3 );
     }
 
-    private void OnBrickDestroy( int index )
+    private void OnBrickDestroy( int index , BrokenHole hole )
     {
         attackBrick.RemoveListener( OnBrickDestroy );
         attackBrick = null;
+
         animator.SetInteger( "status" , 1 );
         timer = 0.0f;
     }

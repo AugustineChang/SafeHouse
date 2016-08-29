@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Brick : MonoBehaviour
 {
+    public BrokenHole Hole;
     public BrickPiece BrickPiece;
     [HideInInspector]
     public int BrickIndex;
@@ -10,7 +11,7 @@ public class Brick : MonoBehaviour
     private static AudioClip[] hitSounds;
     private static AudioClip crashSound;
 
-    private event Action<int> DestroyHandler;
+    private event Action<int, BrokenHole> DestroyHandler;
     private bool isCrash;
     private bool isInit = false;
     private int hitTimes;
@@ -42,12 +43,12 @@ public class Brick : MonoBehaviour
         brickMat = meshRender.material;
     }
 
-    public void AddListener( Action<int> action )
+    public void AddListener( Action<int, BrokenHole> action )
     {
         DestroyHandler += action;
     }
 
-    public void RemoveListener( Action<int> action )
+    public void RemoveListener( Action<int, BrokenHole> action )
     {
         DestroyHandler -= action;
     }
@@ -71,22 +72,24 @@ public class Brick : MonoBehaviour
             audioSource.clip = crashSound;
             audioSource.Play();
 
-            PlayCrashAnime();
+            PlayCrashAnime( true );
         }
     }
 
     public bool isHit() { return hitTimes > 0; }
 
-    public void PlayCrashAnime( bool isDestroy = true )
+    public void PlayCrashAnime( bool addHole = false )
     {
         isCrash = true;
         crashAnime();
         GetComponent<BoxCollider>().enabled = false;
         meshRender.enabled = false;
-        if ( isDestroy ) Destroy( gameObject , 1.0f );
+        Destroy( gameObject , 1.0f );
+
+        BrokenHole hole = addHole ? createHole() : null;
 
         if ( DestroyHandler != null )
-            DestroyHandler.Invoke( BrickIndex );
+            DestroyHandler.Invoke( BrickIndex, hole );
     }
 
     private void crashAnime()
@@ -105,5 +108,15 @@ public class Brick : MonoBehaviour
             piece.transform.localPosition = position;
             piece.transform.localRotation = Quaternion.identity;
         }
+    }
+
+    private BrokenHole createHole()
+    {
+        BrokenHole hole = GameObject.Instantiate<BrokenHole>(Hole);
+        hole.transform.SetParent(transform.parent);
+        hole.transform.position = transform.position;
+        hole.transform.localRotation = Quaternion.identity;
+        hole.Init(BrickIndex);
+        return hole;
     }
 }

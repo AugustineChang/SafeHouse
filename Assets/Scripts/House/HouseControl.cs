@@ -11,6 +11,7 @@ public class HouseControl : MonoBehaviour
     public ZombieCreeper Zombie2;
     
     private List<Brick> brickList;
+    private List<BrokenHole> holeList;
     private float timer;
     private int zombieNum;
     private int zombieMaxNum = 20;
@@ -18,6 +19,8 @@ public class HouseControl : MonoBehaviour
     void Start()
     {
         brickList = new List<Brick>( 120 );
+        holeList = new List<BrokenHole>( 120 );
+        for (int i = 0; i < 120; i++) holeList.Add(null);
 
         createWall( "LeftWall" , new Vector3( -4.5f , 0.5f , -5 ) , Quaternion.identity );
         createWall( "RightWall" , new Vector3( 4.5f , 0.5f , 5 ) , Quaternion.Euler( 0 , 180 , 0 ) );
@@ -29,9 +32,9 @@ public class HouseControl : MonoBehaviour
         createPillar( new Vector3( 5 , 0 , -5 ) );
         createPillar( new Vector3( 5 , 0 , 5 ) );
 
-        //GameObject roof = GameObject.Instantiate<GameObject>( Roof );
-        //roof.transform.SetParent( transform );
-        //roof.transform.localPosition = Vector3.up * 3.15f;
+        GameObject roof = GameObject.Instantiate<GameObject>( Roof );
+        roof.transform.SetParent( transform );
+        roof.transform.localPosition = Vector3.up * 3.15f;
 
         GameObject floor = GameObject.Instantiate<GameObject>( Floor );
         floor.transform.SetParent( transform );
@@ -83,12 +86,22 @@ public class HouseControl : MonoBehaviour
         pillar.transform.localPosition = position;
     }
 
-    private void OnBrickDestroy( int index )
+    private void OnBrickDestroy( int index , BrokenHole hole )
     {
         brickList[index].RemoveListener( OnBrickDestroy );
+
+        hole.AddListener(OnBrickRepair);
+        holeList[index] = hole;
         brickList[index] = null;
         
         checkWallBreak( index / 30 );
+    }
+
+    private void OnBrickRepair(int index , Brick brick)
+    {
+        brick.AddListener(OnBrickDestroy);
+        brickList[index] = brick;
+        holeList[index] = null;
     }
 
     private void OnZombieDie()
@@ -115,6 +128,12 @@ public class HouseControl : MonoBehaviour
                 brickList[i].RemoveListener( OnBrickDestroy );
                 brickList[i].PlayCrashAnime();
                 brickList[i] = null;
+            }
+            if ( holeList[i] != null)
+            {
+                holeList[i].RemoveListener(OnBrickRepair);
+                Destroy(holeList[i].gameObject);
+                holeList[i] = null;
             }
         }
     }

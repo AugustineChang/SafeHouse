@@ -10,7 +10,7 @@ public abstract class Zombie : MonoBehaviour
     protected Animator animator;
     private AudioSource audioSource;
     private AudioClip[] soundList;
-    private int health;
+    protected int health;
     protected float stopTime;
 
     protected void Init()

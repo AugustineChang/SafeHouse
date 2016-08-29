@@ -9,8 +9,10 @@ public class FPSController : MonoBehaviour
     private CharacterController character;
     private MouseLookControl mouseLook;
     private float moveSpeed;
-    private float timer;
-    private float fireCD;
+    private float fireTimer;
+    private float repairTimer;
+    private float calmDown;
+    private int rayLayer;
 
     void Start()
     {
@@ -19,8 +21,10 @@ public class FPSController : MonoBehaviour
         mouseLook.Init( transform , camera.transform );
 
         moveSpeed = 0.05f;
-        fireCD = 1.0f;
-        timer = fireCD;
+        calmDown = 1.0f;
+        fireTimer = calmDown;
+        repairTimer = calmDown;
+        rayLayer = LayerMask.NameToLayer("BrokenHole");
     }
 
     void Update()
@@ -35,22 +39,42 @@ public class FPSController : MonoBehaviour
         character.Move( moveDir * moveSpeed );
         
         checkFire();
+        checkRepair();
     }
 
     private void checkFire()
     {
-        timer += Time.deltaTime;
+        fireTimer += Time.deltaTime;
 
-        if ( Input.GetButton( "Jump" ) )
+        if ( Input.GetButtonDown( "Jump" ) )
         {
-            if ( timer < fireCD ) return;
-            else timer = 0.0f;
+            if (fireTimer < calmDown) return;
+            else fireTimer = 0.0f;
 
             PlayerAttack attack = GameObject.Instantiate<PlayerAttack>( bullet );
 
             Vector3 moveDir = camera.transform.TransformDirection( Vector3.forward );
             attack.transform.position = camera.transform.position + moveDir * 0.5f;
             attack.forceDir = moveDir;
+        }
+    }
+
+    private void checkRepair()
+    {
+        repairTimer += Time.deltaTime;
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            //if (repairTimer < calmDown) return;
+            //else repairTimer = 0.0f;
+
+            RaycastHit hitData;
+            Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out hitData, 2.0f, 1 << rayLayer))
+            {
+                BrokenHole hole = hitData.collider.GetComponent<BrokenHole>();
+                hole.RepairTheHole();
+            }
         }
     }
 }
