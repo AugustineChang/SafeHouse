@@ -8,11 +8,11 @@
 
 	SubShader
 	{
-		Tags{ "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
+		Tags{ "Queue" = "Geometry" "RenderType" = "Opaque" }
 		LOD 200
 
 		CGPROGRAM
-		#pragma surface surf Lambert alpha:fade
+		#pragma surface surf Lambert addshadow
 
 		sampler2D _MainTex;
 		fixed4 _Color;
@@ -29,6 +29,26 @@
 			o.Alpha = c.a;
 		}
 		ENDCG
+
+		Pass
+		{
+			Name "ShadowCaster"
+			Tags{ "LightMode" = "ShadowCaster" }
+
+			ZWrite On ZTest LEqual
+
+			CGPROGRAM
+			#pragma target 3.0
+			//#pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
+			#pragma multi_compile_shadowcaster
+			
+			#pragma vertex vertShadowCaster
+			#pragma fragment fragShadowCaster
+			
+			#include "UnityStandardShadow.cginc"
+			
+			ENDCG
+		}
 	}
 
 	Fallback "Legacy Shaders/Transparent/VertexLit"
