@@ -10,8 +10,10 @@ public abstract class Zombie : MonoBehaviour
     protected Animator animator;
     private AudioSource audioSource;
     private AudioClip[] soundList;
+    protected FPSController target;
     protected int health;
     protected float stopTime;
+    private float attackTimer;
 
     protected void Init()
     {
@@ -27,6 +29,7 @@ public abstract class Zombie : MonoBehaviour
         }
 
         health = 100;
+        target = GameObject.Find("Player").GetComponent<FPSController>();
     }
 
     public void whenHitZombie( int damage )
@@ -35,8 +38,8 @@ public abstract class Zombie : MonoBehaviour
         if ( health <= 0 )
         {
             animator.Play( "Death" );
-            Destroy( gameObject , 3.0f );
-            stopTime = 3.0f;
+            Destroy( gameObject , 2.5f );
+            stopTime = 2.5f;
             WhenDie.Invoke();
             zombieSound( 100 );
         }
@@ -55,5 +58,22 @@ public abstract class Zombie : MonoBehaviour
         if ( rand < 4 ) audioSource.clip = soundList[rand + 1];
         else audioSource.clip = soundList[0];
         audioSource.Play();
+    }
+
+    protected void AttackPlayer( float attackTime , float totalTime , bool isReset = false )
+    {
+        if (isReset) attackTimer = 0.0f;
+
+        float lastTimer = attackTimer;
+        attackTimer += Time.deltaTime;
+        if (attackTimer >= totalTime)
+        {
+            attackTimer = 0.0f;
+        }
+        else if (attackTimer >= attackTime && lastTimer < attackTime)
+        {
+            int rand = UnityEngine.Random.Range(-5, 6);
+            target.HitPlayer(10 + rand);
+        }
     }
 }

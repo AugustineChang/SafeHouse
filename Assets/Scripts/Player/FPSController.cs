@@ -14,30 +14,34 @@ public class FPSController : MonoBehaviour
     private float calmDown;
     private int rayLayer;
 
+    private float health;
+    private CameraFlash cameraFlash;
+
     void Start()
     {
         character = GetComponent<CharacterController>();
         mouseLook = new MouseLookControl();
-        mouseLook.Init( transform , camera.transform );
+        mouseLook.Init(transform, camera.transform);
 
         moveSpeed = 0.05f;
-        calmDown = 1.0f;
+        calmDown = 0.5f;
         fireTimer = calmDown;
         repairTimer = calmDown;
         rayLayer = LayerMask.NameToLayer("BrokenHole");
+        cameraFlash = camera.GetComponent<CameraFlash>();
     }
 
     void Update()
     {
-        mouseLook.LookRotation( transform , camera.transform );
-        
+        mouseLook.LookRotation(transform, camera.transform);
+
         Vector3 input = new Vector3();
-        input.x = Input.GetAxis( "Horizontal" );
+        input.x = Input.GetAxis("Horizontal");
         input.y = -10;
-        input.z = Input.GetAxis( "Vertical" );
-        Vector3 moveDir = transform.TransformDirection( input );
-        character.Move( moveDir * moveSpeed );
-        
+        input.z = Input.GetAxis("Vertical");
+        Vector3 moveDir = transform.TransformDirection(input);
+        character.Move(moveDir * moveSpeed);
+
         checkFire();
         checkRepair();
     }
@@ -46,14 +50,14 @@ public class FPSController : MonoBehaviour
     {
         fireTimer += Time.deltaTime;
 
-        if ( Input.GetButtonDown( "Jump" ) )
+        if (Input.GetButtonDown("Jump"))
         {
             if (fireTimer < calmDown) return;
             else fireTimer = 0.0f;
 
-            PlayerAttack attack = GameObject.Instantiate<PlayerAttack>( bullet );
+            PlayerAttack attack = GameObject.Instantiate<PlayerAttack>(bullet);
 
-            Vector3 moveDir = camera.transform.TransformDirection( Vector3.forward );
+            Vector3 moveDir = camera.transform.TransformDirection(Vector3.forward);
             attack.transform.position = camera.transform.position + moveDir * 0.5f;
             attack.forceDir = moveDir;
         }
@@ -65,8 +69,8 @@ public class FPSController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            //if (repairTimer < calmDown) return;
-            //else repairTimer = 0.0f;
+            if (repairTimer < calmDown) return;
+            else repairTimer = 0.0f;
 
             RaycastHit hitData;
             Ray ray = camera.ScreenPointToRay(Input.mousePosition);
@@ -76,5 +80,10 @@ public class FPSController : MonoBehaviour
                 hole.RepairTheHole();
             }
         }
+    }
+
+    public void HitPlayer(int damage)
+    {
+        cameraFlash.StartFlash = true;
     }
 }

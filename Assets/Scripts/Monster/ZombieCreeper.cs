@@ -7,7 +7,6 @@ public class ZombieCreeper : Zombie
     private float timer;
 
     //creep
-    private Transform target;
     private bool isAttack;
     private int state;
     private float speed;
@@ -29,7 +28,6 @@ public class ZombieCreeper : Zombie
 
         state = 0;
         speed = 0.6f;
-        target = GameObject.Find( "Player" ).transform;
 	}
 	
 	void Update()
@@ -73,10 +71,11 @@ public class ZombieCreeper : Zombie
             return;
         }
 
-        Vector3 targetPos = new Vector3( target.position.x , 0 , target.position.z );
+        Vector3 targetPos = new Vector3( target.transform.position.x , 0 , target.transform.position.z );
         float distance = Vector3.Distance( transform.position , targetPos );
         if ( distance <= 1.5f )
         {
+            AttackPlayer(0.333f, 0.667f, !isAttack);
             if ( !isAttack )
             {
                 isAttack = true;

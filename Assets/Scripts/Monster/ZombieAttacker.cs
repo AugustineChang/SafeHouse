@@ -3,7 +3,6 @@ using System.Collections;
 
 public class ZombieAttacker : Zombie
 {
-    private Transform target;
     private Brick attackBrick;
     private Brick downBrick;
     private BrokenHole attackHole;
@@ -36,7 +35,6 @@ public class ZombieAttacker : Zombie
 
         timer = 0.0f;
         walkSpeed = 0.6f;
-        target = GameObject.Find( "Player" ).transform;
 
         attackBrick = brick;
         attackBrick.AddListener( OnBrickDestroy );
@@ -48,16 +46,17 @@ public class ZombieAttacker : Zombie
     {
         if ( attackBrick == null )
         {
-            if ( downBrick == null )
+            if (downBrick == null)
             {
                 timer += Time.deltaTime;
-                if ( timer > 2.0f ) walkAndAttack();
+                if (timer > 2.0f) walkAndAttack();
                 else
                 {
-                    Vector3 forward = transform.TransformDirection( Vector3.forward );
+                    Vector3 forward = transform.TransformDirection(Vector3.forward);
                     transform.localPosition += forward * walkSpeed * Time.deltaTime;
                 }
             }
+            else attackBehindWall();
         }
         else
         {
@@ -79,10 +78,11 @@ public class ZombieAttacker : Zombie
             return;
         }
 
-        Vector3 targetPos = new Vector3( target.position.x , 0 , target.position.z );
+        Vector3 targetPos = new Vector3( target.transform.position.x , 0 , target.transform.position.z );
         float distance = Vector3.Distance( transform.position , targetPos );
         if ( distance <= 1.0f )
         {
+            AttackPlayer(0.5f, 1.0f, !isAttack);
             if ( !isAttack )
             {
                 isAttack = true;
@@ -103,6 +103,16 @@ public class ZombieAttacker : Zombie
 
         Vector3 lookForward = targetPos - transform.position;
         transform.rotation = Quaternion.Slerp( transform.rotation , Quaternion.LookRotation( lookForward ) , Time.deltaTime * 3 );
+    }
+
+    private void attackBehindWall()
+    {
+        Vector3 targetPos = new Vector3(target.transform.position.x, 0, target.transform.position.z);
+        float distance = Vector3.Distance(transform.position, targetPos);
+        if (distance <= 1.35f)
+        {
+            AttackPlayer(0.167f, 0.667f);
+        }
     }
 
     private void OnBrickDestroy( int index , BrokenHole hole )
