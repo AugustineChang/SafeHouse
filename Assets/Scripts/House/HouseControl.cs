@@ -22,22 +22,27 @@ public class HouseControl : MonoBehaviour
         holeList = new List<BrokenHole>( 120 );
         for (int i = 0; i < 120; i++) holeList.Add(null);
 
-        createWall( "LeftWall" , new Vector3( -4.5f , 0.5f , -5 ) , Quaternion.identity );
-        createWall( "RightWall" , new Vector3( 4.5f , 0.5f , 5 ) , Quaternion.Euler( 0 , 180 , 0 ) );
-        createWall( "FrontWall" , new Vector3( 5 , 0.5f , -4.5f ) , Quaternion.Euler( 0 , -90 , 0 ) );
-        createWall( "BackWall" , new Vector3( -5 , 0.5f , 4.5f ) , Quaternion.Euler( 0 , 90 , 0 ) );
+        createHouse();
+    }
 
-        createPillar( new Vector3( -5 , 0 , -5 ) );
-        createPillar( new Vector3( -5 , 0 , 5 ) );
-        createPillar( new Vector3( 5 , 0 , -5 ) );
-        createPillar( new Vector3( 5 , 0 , 5 ) );
+    private void createHouse()
+    {
+        createWall("LeftWall", new Vector3(-4.5f, 0.5f, -5), Quaternion.identity);
+        createWall("RightWall", new Vector3(4.5f, 0.5f, 5), Quaternion.Euler(0, 180, 0));
+        createWall("FrontWall", new Vector3(5, 0.5f, -4.5f), Quaternion.Euler(0, -90, 0));
+        createWall("BackWall", new Vector3(-5, 0.5f, 4.5f), Quaternion.Euler(0, 90, 0));
 
-        GameObject roof = GameObject.Instantiate<GameObject>( Roof );
-        roof.transform.SetParent( transform );
+        createPillar(new Vector3(-5, 0, -5));
+        createPillar(new Vector3(-5, 0, 5));
+        createPillar(new Vector3(5, 0, -5));
+        createPillar(new Vector3(5, 0, 5));
+
+        GameObject roof = GameObject.Instantiate<GameObject>(Roof);
+        roof.transform.SetParent(transform);
         roof.transform.localPosition = Vector3.up * 3.15f;
 
-        GameObject floor = GameObject.Instantiate<GameObject>( Floor );
-        floor.transform.SetParent( transform );
+        GameObject floor = GameObject.Instantiate<GameObject>(Floor);
+        floor.transform.SetParent(transform);
         floor.transform.localPosition = Vector3.down * 0.1f;
     }
 
@@ -168,5 +173,18 @@ public class HouseControl : MonoBehaviour
             newZ.Init( brick , brickList[wall * 30 + cell - 10] );
             newZ.WhenDie = OnZombieDie;
         }
+    }
+
+    public void ResetHouse()
+    {
+        int child = transform.childCount;
+        for (int i = 0; i < child; i++)
+        {
+            Destroy(transform.GetChild(i).gameObject);
+        }
+
+        createHouse();
+        timer = 0.0f;
+        zombieNum = 0;
     }
 }

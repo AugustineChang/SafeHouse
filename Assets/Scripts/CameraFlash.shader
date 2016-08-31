@@ -5,6 +5,7 @@
 		_MainTex("Texture", 2D) = "white" {}
 		_Color ("Flash Color", Color) = (1,1,1,1)
 		_Progress("Control Flash", Range(0,1)) = 0
+		_Progress2("Control Black", Range(0,1)) = 1
 	}
 	SubShader
 	{
@@ -35,6 +36,7 @@
 			float4 _MainTex_ST;
 			float4 _Color;
 			float _Progress;
+			float _Progress2;
 			
 			v2f vert (appdata v)
 			{
@@ -49,7 +51,7 @@
 				float halfPI = 1.570796;
 				fixed4 col = tex2D(_MainTex, i.uv);
 				fixed4 flashCol = (1 - (1 - _Color) * sin(halfPI + _Progress * halfPI) * 0.5) + step(_Progress, 0);
-				return col * min(1, flashCol);
+				return col * min(1, flashCol) * _Progress2;
 			}
 			ENDCG
 		}

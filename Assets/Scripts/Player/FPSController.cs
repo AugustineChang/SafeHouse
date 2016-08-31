@@ -28,10 +28,21 @@ public class FPSController : MonoBehaviour
         fireTimer = calmDown;
         repairTimer = calmDown;
         rayLayer = LayerMask.NameToLayer("BrokenHole");
+
+        health = 200;
         cameraFlash = camera.GetComponent<CameraFlash>();
     }
 
     void Update()
+    {
+        if (isDead()) return;
+
+        playerMove();
+        checkFire();
+        checkRepair();
+    }
+
+    private void playerMove()
     {
         mouseLook.LookRotation(transform, camera.transform);
 
@@ -41,9 +52,6 @@ public class FPSController : MonoBehaviour
         input.z = Input.GetAxis("Vertical");
         Vector3 moveDir = transform.TransformDirection(input);
         character.Move(moveDir * moveSpeed);
-
-        checkFire();
-        checkRepair();
     }
 
     private void checkFire()
@@ -84,6 +92,18 @@ public class FPSController : MonoBehaviour
 
     public void HitPlayer(int damage)
     {
-        cameraFlash.StartFlash = true;
+        if (isDead()) return;
+
+        health -= damage;
+
+        if (health > 0) cameraFlash.StartFlash = 1;
+        else cameraFlash.StartFlash = 2;
+    }
+
+    public bool isDead() { return health <= 0; }
+
+    public void ResetPlayer()
+    {
+        health = 200;
     }
 }
