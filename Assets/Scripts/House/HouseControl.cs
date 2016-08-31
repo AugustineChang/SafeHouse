@@ -9,7 +9,8 @@ public class HouseControl : MonoBehaviour
     public GameObject Floor;
     public ZombieAttacker Zombie;
     public ZombieCreeper Zombie2;
-    
+
+    private FPSController player;
     private List<Brick> brickList;
     private List<BrokenHole> holeList;
     private float timer;
@@ -23,6 +24,7 @@ public class HouseControl : MonoBehaviour
         for (int i = 0; i < 120; i++) holeList.Add(null);
 
         createHouse();
+        player = GameObject.Find( "Player" ).GetComponent<FPSController>();
     }
 
     private void createHouse()
@@ -48,6 +50,7 @@ public class HouseControl : MonoBehaviour
 
     void Update()
     {
+        if ( player.isDead() ) return;
         if ( zombieNum >= zombieMaxNum ) return;
 
         timer += Time.deltaTime;
@@ -182,6 +185,9 @@ public class HouseControl : MonoBehaviour
         {
             Destroy(transform.GetChild(i).gameObject);
         }
+
+        brickList.Clear();
+        for ( int i = 0 ; i < 120 ; i++ ) holeList.Add( null );
 
         createHouse();
         timer = 0.0f;

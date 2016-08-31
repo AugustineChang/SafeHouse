@@ -10,63 +10,74 @@ public class CameraFlash : MonoBehaviour
     [Range(0,1)]
     public float blackProgress;
 
-    private GameObject canvas;
+    private UIControl canvas;
     private Material mat;
     private float timer;
-    private int playStatus;
+    private bool isFlash;
+    private bool isBlack;
 
     public int StartFlash
     {
         set
         {
-            if (value == 1 && playStatus == 1) timer = 0.0f;
-            if (value == 2)
+            if ( value == 0 )
             {
-                timer = 0.0f;
-                flashProgress = 0.0f;
-                blackProgress = 0.0f;
+                isFlash = false;
+                isBlack = false;
+            } 
+            else if ( value == 1 ) isFlash = true;
+            else if ( value == 2 )
+            {
+                isBlack = true;
+                Reset();
             }
-            playStatus = value;
+
+            timer = 0.0f;
         }
+    }
+
+    public void Reset()
+    {
+        flashProgress = 0.0f;
+        blackProgress = 0.0f;
+        if ( canvas ) canvas.SetActive( false );
     }
 
     void Start()
     {
-        timer = 0.0f;
         flashProgress = 0.0f;
         mat = new Material(flashShader);
         mat.hideFlags = HideFlags.HideAndDontSave;
 
         mat.SetColor("_Color", flashColor);
-        canvas = GameObject.Find("Canvas");
+        canvas = GameObject.Find( "Canvas" ).GetComponent<UIControl>();
     }
 
     void Update()
     {
-        if (playStatus == 1)
+        if ( isFlash )
         {
             timer += Time.deltaTime * 5.0f;
             flashProgress = timer;
 
-            if (timer >= 1.0f)
+            if ( timer >= 1.0f )
             {
-                timer = 0.0f;
                 flashProgress = 0.0f;
                 StartFlash = 0;
             }
         }
-        else if (playStatus == 2)
+
+        if ( isBlack )
         {
             timer += Time.deltaTime;
             blackProgress = timer;
 
-            if (timer >= 1.0f)
+            if ( timer >= 1.0f )
             {
-                timer = 0.0f;
                 blackProgress = 1.0f;
                 StartFlash = 0;
 
-                canvas.SetActive(true);
+                canvas.SetActive( true );
             }
         }
     }

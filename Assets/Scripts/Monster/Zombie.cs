@@ -75,7 +75,5 @@ public abstract class Zombie : MonoBehaviour
             int rand = UnityEngine.Random.Range(-5, 6);
             target.HitPlayer(10 + rand);
         }
-
-        if (target.isDead()) Destroy(gameObject, 2.0f);
     }
 }

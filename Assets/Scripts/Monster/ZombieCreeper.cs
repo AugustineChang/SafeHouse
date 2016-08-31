@@ -32,6 +32,12 @@ public class ZombieCreeper : Zombie
 	
 	void Update()
     {
+        if ( target.isDead() )
+        {
+            Destroy( gameObject , 2.0f );
+            return;
+        }
+
         if ( attackBrick == null )
         {
             if ( state == 0 )

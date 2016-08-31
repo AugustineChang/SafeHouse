@@ -21,16 +21,16 @@ public class FPSController : MonoBehaviour
     {
         character = GetComponent<CharacterController>();
         mouseLook = new MouseLookControl();
-        mouseLook.Init(transform, camera.transform);
+        mouseLook.Init( transform , camera.transform );
 
         moveSpeed = 0.05f;
         calmDown = 0.5f;
         fireTimer = calmDown;
         repairTimer = calmDown;
-        rayLayer = LayerMask.NameToLayer("BrokenHole");
+        rayLayer = LayerMask.NameToLayer( "BrokenHole" );
 
-        health = 200;
         cameraFlash = camera.GetComponent<CameraFlash>();
+        ResetPlayer();
     }
 
     void Update()
@@ -104,6 +104,12 @@ public class FPSController : MonoBehaviour
 
     public void ResetPlayer()
     {
-        health = 200;
+        health = 50;
+        cameraFlash.Reset();
+
+        transform.position = Vector3.zero;
+        transform.localRotation = Quaternion.identity;
+        camera.transform.localRotation = Quaternion.identity;
+        mouseLook.Init( transform , camera.transform );
     }
 }

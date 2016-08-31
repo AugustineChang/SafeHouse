@@ -12,17 +12,12 @@ public class BrokenHole : MonoBehaviour
     private int repairTimes;
     private int maxRepairTimes;
 
-    private float timer;
-    private Color startCol;
-
     public void Init( int index )
     {
         brickIndex = index;
 
-        timer = 0.0f;
         repairTimes = 0;
         maxRepairTimes = 5;
-        startCol = new Color(1, 1, 1, 0);
     }
 
     public void AddListener(Action<int, Brick> callback)

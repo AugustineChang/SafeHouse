@@ -44,6 +44,12 @@ public class ZombieAttacker : Zombie
 	
 	void Update()
     {
+        if ( target.isDead() )
+        {
+            Destroy( gameObject , 2.0f );
+            return;
+        }
+
         if ( attackBrick == null )
         {
             if (downBrick == null)
